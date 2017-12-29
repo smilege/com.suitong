@@ -1,0 +1,34 @@
+{
+"module":"privilege",
+"tableName":"t_sys_user",
+"entityName":"User",
+"isPage":"Y",
+"needPart":"manage,save,delete,detail,import,export",
+"fields":[
+			{
+				"name":"性别",
+				"code":"sex",
+				"dataType":"String",
+				"componentType":"checkbox",
+				"search":"0",
+				"detail":"N",
+				"import":"N"
+			},
+			{
+				"name":"用户名",
+				"code":"userName",
+				"dataType":"String",
+				"componentType":"text",
+				"search":"1",
+			},{
+				"name":"状态",
+				"code":"status",
+				"dataType":"int",
+				"componentType":"select",
+				"list":"N",
+				"save":"N",
+				"detail":"N",
+				"import":"N"
+			}
+		]
+}
