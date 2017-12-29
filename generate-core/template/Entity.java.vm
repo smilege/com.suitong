@@ -1,0 +1,29 @@
+package ${packageName}.entity;
+
+import java.io.Serializable;
+import java.util.Date;
+
+/*
+ * A ${entityName} entity
+ */
+
+@Entity
+@Table(name = "${tableName}")
+public class ${entityName} implements Serializable {
+	private static final long serialVersionUID = 1L;
+		
+#foreach ($entity in $javaEntity)
+	//$entity.name
+	 @Column(name = "${entity.columnName}")
+	private $entity.dataType $entity.code;
+#end
+
+#foreach ($entity in $javaEntity)
+	public void set${entity.formatterCode}($entity.dataType $entity.code) {
+		this.$entity.code = $entity.code;
+	}
+	public $entity.dataType get${entity.formatterCode}() {
+		return $entity.code;
+	}
+#end
+}

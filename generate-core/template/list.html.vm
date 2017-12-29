@@ -1,0 +1,48 @@
+
+<div class="panel ng-scope re-panel page-bottom" ng-controller="${className}Controller" >
+    <form class="form-horizontal form-inline page-top">
+        <div class="wrapper-md">
+			<div class="row">
+			<div class="col-sm-12">
+		   					
+			<div class="form-group m-n">
+				<label class="control-label">${feildName}</label>
+				<div class="padder inline">
+					<input type="text" class="form-control ng-pristine ng-valid ng-touched" 
+					ng-model="formParam.${feildCode}" />
+				</div>  
+			</div>	
+		
+		
+			 <div class="form-group m-n">
+				<button class="btn btn-info pull-left" ng-click="loadAll()">
+					<span class="glyphicon glyphicon-search"></span>
+					<span data-translate="global.go"></span>
+				</button>
+			</div>
+			<div class="form-group m-n">
+				<button class="btn btn-info pull-left" ng-click="resetSearch()">
+				<span class="glyphicon glyphicon-refresh"></span>
+				<span data-translate="global.reset"></span>
+				</button>
+			</div>
+
+			
+				</div>
+		    </div>
+        </div>
+    </form>
+    <div class="wrapper-md">
+		<div class="m-t-n-xs p-b clear">
+			<button class="btn btn-primary" ng-click="add<%= entityAngularName %>()">
+                <span class="glyphicon glyphicon-plus"></span> 
+                <span data-translate="devplatformApp.<%= entityStateName %>.home.createLabel">Create a new <%= entityAngularName %></span>
+            </button>
+			<button class="btn btn-primary" ng-click="batchDelete()">
+                <span class="glyphicon glyphicon-minus"></span> 
+                <span data-translate="global.batchDelete"></span>
+            </button>
+		</div>
+        <div tables-model tables-data-model="tablesConfig"></div>
+    </div>
+</div>
