@@ -15,6 +15,7 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.st.entity.DetailField;
@@ -62,14 +63,14 @@ public class GenerateCode {
     		tableEntity.setIsPage(Constant.Y);
     	}
     	String needPart = prop.getString("needPart");
-    	String[] part=null;
+    	List<String> needList = new ArrayList<String>();
     	if (StringUtils.isNotBlank(needPart)) {
-    		 part=needPart.split(",");
+    		 needList.add(needPart.toString());
     	}
 		tableEntity.setModule(module);
 		tableEntity.setTableName(tableName);
 		tableEntity.setEntityName(entityName);
-		tableEntity.setNeedPart(part);
+		tableEntity.setNeedPart(needList);
 		
 		//根据模块功能定制数据
 		List<SearchField> searchList = new ArrayList<>();
@@ -77,6 +78,8 @@ public class GenerateCode {
 		List<SaveField> saveList = new ArrayList<>();
 		List<DetailField> detailList = new ArrayList<>();
 		List<JavaEntity> javaEntityList = new ArrayList<>();
+		Map<Object,Object> regexMap = new HashMap<>();
+		List<String> regexList = new ArrayList<>();
 		JSONArray fieldsArray = prop.getJSONArray("fields");
 		for (Object obj : fieldsArray) {
 			JSONObject json = (JSONObject) obj;
@@ -86,6 +89,7 @@ public class GenerateCode {
 			String dataType = json.getString("dataType");
 			String columnName = StringUtil.camelUnderline(code,dataType);
 			String componentType = json.getString("componentType");
+			String regex = json.getString("regex");
 			
 			//处理查询块，search约定空为不查询，0为精确，1为模糊，2为精确+模糊
 			SearchField searchField = new SearchField();
@@ -114,6 +118,7 @@ public class GenerateCode {
 				saveField.setCode(code);
 				saveField.setName(name);
 				saveField.setComponentType(componentType);
+				saveField = HandleRegex(saveField,regexList,regexMap,regex);
 				saveList.add(saveField);
 			}
 			
@@ -133,7 +138,7 @@ public class GenerateCode {
 			javaEntity.setFormatterCode(formatterCode);
 			javaEntity.setName(name);
 			javaEntity.setDataType(dataType);
-			javaEntity.setColumnName(columnName);
+			javaEntity.setDataBaseColunmName(columnName);
 			javaEntityList.add(javaEntity);
 		}
 		tableEntity.setListList(listList);
@@ -151,15 +156,16 @@ public class GenerateCode {
 		map.put("module", module);
 		map.put("tableName", tableEntity.getTableName());
 		map.put("entityName", tableEntity.getEntityName());
+		map.put("needPart", tableEntity.getNeedPart());
 		map.put("searchField", tableEntity.getSearchList());
 		map.put("saveField", tableEntity.getSaveList());
 		map.put("listField", tableEntity.getListList());
 		map.put("isPage", tableEntity.getIsPage());
-		map.put("javaEntity", tableEntity.getJavaEntityList());
+		map.put("javaEntityList", tableEntity.getJavaEntityList());
         VelocityContext context = new VelocityContext(map);
         
         //获取模板列表
-		List<String> templates = getTemplates(part);
+		List<String> templates = getTemplates(needList);
 		for(String template : templates){
 			//渲染模板
 			StringWriter sw = new StringWriter();
@@ -188,29 +194,51 @@ public class GenerateCode {
 	}
 	
 	
-	public static List<String> getTemplates(String[] part){
+	/**
+	 * @param saveField 
+	 * @param regexList 
+	 * @param regexMap 
+	 * @param regex
+	 * @return
+	 */
+	private static SaveField HandleRegex(SaveField saveField, List<String> regexList, Map<Object, Object> regexMap, String regex) {
+		if (StringUtils.isNotBlank(regex)) {
+			String[] regexs = regex.split(",");
+			for (String str : regexs) {
+				if(str.contains("[")){
+					str = str.substring(1, str.length()-1);
+					
+				}else{
+					regexList.add(str);
+					}
+				}
+			saveField.setRegex(regexList);
+			}
+		return null;
+	}
+
+	public static List<String> getTemplates(List<String> part){
 		List<String> templates = new ArrayList<String>();
 		//根据功能选择对应的前端模板
-/*		if(null!=part){
-			int len = part.length;
-			for (int i = 0; i < len; i++) {
-				if (part[i].contains("manage")) {
+		if(null!=part && part.size()>0){
+			for (String needPart : part) {
+			/*	if (needPart.contains("manage")) {
 					templates.add("template/list.html.vm");
 					templates.add("template/list.controller.js.vm");
-				}
-				if (part[i].contains("save")) {
+				}*/
+				if (needPart.contains("save")) {
 					templates.add("template/save.html.vm");
 					templates.add("template/save.controller.js.vm");
 				}
-				if (part[i].contains("detail")) {
+				if (needPart.contains("detail")) {
 					templates.add("template/detail.html.vm");
 					templates.add("template/detail.controller.js.vm");
 				}
 			}
-		}*/
+		}
 		//后台模板
 		templates.add("template/Entity.java.vm");
-	/*	templates.add("template/Controller.java.vm");
+		/*templates.add("template/Controller.java.vm");
 		templates.add("template/Service.java.vm");
 		templates.add("template/ServiceImpl.java.vm");
 		templates.add("template/Dao.java.vm");*/

@@ -2,43 +2,41 @@
     'use strict';
 
     angular
-        .module('<%=angularAppName%>')
-        .controller('<%= entityAngularName %>Controller', <%= entityAngularName %>Controller);
+        .module('devplatformApp')
+        .controller('${entityName}Controller', ${entityName}Controller);
 
-    <%= entityAngularName %>Controller.$inject = ['<%= entityAngularName %>Service', 'ngDialog', '$state', '$scope', '$timeout', 'PublicService'];
+    ${entityName}Controller.$inject = ['${entityName}Service', 'ngDialog', '$state', '$scope', '$timeout', 'PublicService'];
 
-    function <%= entityAngularName %>Controller(<%= entityAngularName %>Service, ngDialog, $state, $scope, $timeout, PublicService) {
-        $scope.formParam = {
-
-        };
+    function ${entityName}Controller(${entityName}Service, ngDialog, $state, $scope, $timeout, PublicService) {
+        $scope.formParam = {};
 		$scope.datePickerOpenStatus = {};
         $scope.tablesConfig = {
             showCheckBox:true,
 			tableWidth:'table-default-width',
             tableTitles:[
-			<%_ for (idx in fields) {
-				const fieldName = fields[idx].fieldName;
-				const fieldNameHumanized = fields[idx].fieldNameHumanized;
-				const fieldType = fields[idx].fieldType;
-				const translationKey = keyPrefix + fieldName;
-				if(['Instant', 'ZonedDateTime'].includes(fieldType)){
-				_%>
-                {title:"<%= translationKey %>", filed: '<%= fieldName %>',type:'date',width:'table-item-pre-1'},  
-				<%_ } else if (idx == 0){ _%>
-				{title:"<%= translationKey %>", filed: '<%= fieldName %>',type:'text-btn',width:'table-item-pre-1',actions:[
-                    {actionName:'show<%= entityAngularName %>(item.id)'}
-                    ]}, 
-				<%_ } else { _%>
-				{title:"<%= translationKey %>", filed: '<%= fieldName %>',type:'text',width:'table-item-pre-1'},    
-				<%_ } _%>
-			<%_ }_%>
+			#foreach ($entity in $listField)
+				#set($name ="$entity.name")
+				#set($code ="$entity.code")
+				#set($type ="entity.componentType")
+				
+				#if(${type}=="date")
+                {title:"${name}", filed: '${code}',type:'date',width:'table-item-pre-1'},  
+				#else
+				{title:"${name}", filed: '${code}',type:'text',width:'table-item-pre-1'},    
+			   #end		
+			#end
+			#foreach ($part in $needPart)
                 {title:"entity.action.operation",filed:'operation',type:'btn',width:'table-item-pre-1',actions:[
-                    {actionName:'edit<%= entityAngularName %>(item.id)',name:'entity.action.edit'},
-                    {actionName:'delete<%= entityAngularName %>(item.id)',name:'entity.action.delete'}
+                #if($part=="save")
+                    {actionName:'edit${entityName}(item.id)',name:'entity.action.edit'},
+                #elseif($part=="detail") 
+                    {actionName:'show${entityName}(item.id)',name:'entity.action.detail'},
+                #elseif($part=="delete") 
+                    {actionName:'delete${entityName}(item.id)',name:'entity.action.delete'}
                     ]}
                     ],
 	
-            url:'api/<%= entityInstance %>/list<%= entityClass %>',
+            url:'api/<%= entityName %>/list<%= entityName %>',
             
 			formParams:{
 				<%_ for (idx in fields) {
@@ -83,7 +81,7 @@
 		<%_}_%>
 		
 		$scope.confirmDelete = function(id){
-			 <%= entityAngularName %>Service.delete<%= entityClass %>(id)
+			 ${entityName}Service.delete<%= entityClass %>(id)
 				.then(function (response){
 					if(response.statusCode === "0000"){
 						$scope.loadAll();
@@ -92,7 +90,7 @@
 		};
 		
 		
-		$scope.delete<%= entityAngularName %> = function(id) {
+		$scope.delete${entityName} = function(id) {
 			var msg = "global.messages.deleteConfirm";
 			PublicService.showConfirmDialog(msg, "confirmDelete", $scope, id);
         };
@@ -107,7 +105,7 @@
         
         $scope.confirmBatchDelete = function(checkeds){
         	var delObj = {"ids":checkeds};
-			 <%= entityAngularName %>Service.batchDelete<%= entityClass %>(delObj)
+			 ${entityName}Service.batchDelete<%= entityClass %>(delObj)
 				.then(function (response){
 					if(response.statusCode === "0000"){
 						$scope.loadAll();
@@ -117,15 +115,15 @@
 		
 		
 		
-        $scope.add<%= entityAngularName %> = function(){
+        $scope.add${entityName} = function(){
             $state.go('app.<%= entityStateName %>-edit',{id:null});
         };
 
-        $scope.edit<%= entityAngularName %> = function (id) {
+        $scope.edit${entityName} = function (id) {
             $state.go('app.<%= entityStateName %>-edit',{id:id});
         };
 		
-		$scope.show<%= entityAngularName %> = function (id) {
+		$scope.show${entityName} = function (id) {
         	$state.go('app.<%= entityStateName %>-detail',{id:id});
         };
 

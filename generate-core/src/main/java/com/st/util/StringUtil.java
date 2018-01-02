@@ -101,17 +101,13 @@ public class StringUtil {
 		if(StringUtils.isNotBlank(packageName)){
 			packagePath += packageName.replace(".", File.separator) + File.separator;
 		}
-		
+		//后端模板
 		if(template.contains("Entity.java.vm")){
 			return packagePath + "entity" + File.separator + className + ".java";
 		}
 		
 		if(template.contains("Dao.java.vm")){
 			return packagePath + "dao" + File.separator + className + "Dao.java";
-		}
-		
-		if(template.contains("Dao.xml.vm")){
-			return packagePath + "dao" + File.separator + className + "Dao.xml";
 		}
 		
 		if(template.contains("Service.java.vm")){
@@ -126,18 +122,38 @@ public class StringUtil {
 			return packagePath + "controller" + File.separator + className + "Controller.java";
 		}
 		
-		if(template.contains("list.html.vm")){
+		//前端模板
+		if(template.contains("html.vm")){
+			return "client"+ File.separator +"html" + File.separator + StringUtil.lowCaseByFirst(className) + ".html";
+		}
+/*		if(template.contains("save.html.vm")){
 			return "client"+ File.separator +"html" + File.separator + StringUtil.lowCaseByFirst(className) + ".html";
 		}
 		
-		if(template.contains("list.js.vm")){
+		if(template.contains("detail.html.vm")){
+			return "client"+ File.separator +"html" + File.separator + StringUtil.lowCaseByFirst(className) + ".html";
+		}*/
+		
+		if(template.contains("js.vm")){
 			return "client"+ File.separator +"js" + File.separator + StringUtil.lowCaseByFirst(className) + ".js";
 		}
-
-		if(template.contains("menu.sql.vm")){
-			return className.toLowerCase() + ".sql";
+		
+		/*if(template.contains("save.controller.js.vm")){
+			return "client"+ File.separator +"js" + File.separator + StringUtil.lowCaseByFirst(className) + ".js";
 		}
 		
+		if(template.contains("detail.controller.js.vm")){
+			return "client"+ File.separator +"js" + File.separator + StringUtil.lowCaseByFirst(className) + ".js";
+		}
+		
+		if(template.contains("service.js.vm")){
+			return "client"+ File.separator +"js" + File.separator + StringUtil.lowCaseByFirst(className) + ".js";
+		}
+		
+		if(template.contains("state.js.vm")){
+			return "client"+ File.separator +"js" + File.separator + StringUtil.lowCaseByFirst(className) + ".js";
+		}*/
+
 		return null;
 	}
 

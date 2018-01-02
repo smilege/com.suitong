@@ -18,7 +18,7 @@ public class TableEntity {
 	private List<ListField> listList;
 	private List<DetailField> detailList;
 	private List<JavaEntity> javaEntityList;
-	private String[] needPart;
+	private List<String> needPart;
 	
 	
 	
@@ -70,10 +70,11 @@ public class TableEntity {
 	public void setJavaEntityList(List<JavaEntity> javaEntityList) {
 		this.javaEntityList = javaEntityList;
 	}
-	public String[] getNeedPart() {
+	
+	public List<String> getNeedPart() {
 		return needPart;
 	}
-	public void setNeedPart(String[] needPart) {
+	public void setNeedPart(List<String> needPart) {
 		this.needPart = needPart;
 	}
 	public List<DetailField> getDetailList() {
