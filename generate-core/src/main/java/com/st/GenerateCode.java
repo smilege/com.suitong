@@ -54,6 +54,7 @@ public class GenerateCode {
 		String module = prop.getString("module");
     	String tableName = prop.getString("tableName");
     	String entityName = StringUtil.upperCaseByFirst(prop.getString("entityName"));
+    	String formatEntityName = StringUtil.lowCaseByFirst(prop.getString("entityName"));
     	//类型没有，默认将表名格式化为列名，例如t_user-->User
     	if (StringUtils.isBlank(entityName)) {
     		entityName = StringUtil.tableNameAsClassName(tableName);
@@ -156,6 +157,7 @@ public class GenerateCode {
 		map.put("module", module);
 		map.put("tableName", tableEntity.getTableName());
 		map.put("entityName", tableEntity.getEntityName());
+		map.put("formatEntityName", tableEntity.getFormatEntityName());
 		map.put("needPart", tableEntity.getNeedPart());
 		map.put("searchField", tableEntity.getSearchList());
 		map.put("saveField", tableEntity.getSaveList());
@@ -222,10 +224,10 @@ public class GenerateCode {
 		//根据功能选择对应的前端模板
 		if(null!=part && part.size()>0){
 			for (String needPart : part) {
-			/*	if (needPart.contains("manage")) {
+			if (needPart.contains("manage")) {
 					templates.add("template/list.html.vm");
 					templates.add("template/list.controller.js.vm");
-				}*/
+				}
 				if (needPart.contains("save")) {
 					templates.add("template/save.html.vm");
 					templates.add("template/save.controller.js.vm");
@@ -238,10 +240,10 @@ public class GenerateCode {
 		}
 		//后台模板
 		templates.add("template/Entity.java.vm");
-		/*templates.add("template/Controller.java.vm");
+		templates.add("template/Controller.java.vm");
 		templates.add("template/Service.java.vm");
 		templates.add("template/ServiceImpl.java.vm");
-		templates.add("template/Dao.java.vm");*/
+		templates.add("template/Dao.java.vm");
 		return templates;
 	}
 	

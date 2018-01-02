@@ -12,6 +12,7 @@ public class TableEntity {
 	private String module;
 	private String tableName;
 	private String entityName;
+	private String formatEntityName; //格式化类名，例如User-->user
 	private String isPage;
 	private List<SearchField> searchList;
 	private List<SaveField> saveList;
@@ -39,6 +40,13 @@ public class TableEntity {
 	}
 	public void setEntityName(String entityName) {
 		this.entityName = entityName;
+	}
+	
+	public String getFormatEntityName() {
+		return formatEntityName;
+	}
+	public void setFormatEntityName(String formatEntityName) {
+		this.formatEntityName = formatEntityName;
 	}
 	public String getIsPage() {
 		return isPage;

@@ -25,44 +25,44 @@
 				{title:"${name}", filed: '${code}',type:'text',width:'table-item-pre-1'},    
 			   #end		
 			#end
-			#foreach ($part in $needPart)
                 {title:"entity.action.operation",filed:'operation',type:'btn',width:'table-item-pre-1',actions:[
+			#foreach ($part in $needPart)
                 #if($part=="save")
                     {actionName:'edit${entityName}(item.id)',name:'entity.action.edit'},
                 #elseif($part=="detail") 
                     {actionName:'show${entityName}(item.id)',name:'entity.action.detail'},
                 #elseif($part=="delete") 
                     {actionName:'delete${entityName}(item.id)',name:'entity.action.delete'}
+	 			#end		
+			#end
                     ]}
                     ],
-	
-            url:'api/<%= entityName %>/list<%= entityName %>',
+            url:'api/${formatEntityName}/list${entityName}',
             
 			formParams:{
-				<%_ for (idx in fields) {
-					const fieldName = fields[idx].fieldName;
-					if (fields[idx].javadoc != null) { _%>
-						<%= fieldName %> : $scope.formParam.<%= fieldName %>,					
-				<%_	}
-				} _%>
+				#foreach ($entity in $searchField)
+					#set($name ="$entity.name")
+					#set($componentType ="$entity.componentType")
+						${name} : $scope.formParam.${name},					
+				   #end		
 			}
 		};
-						
-		<%_  var count=0;		
-			for (idx in fields) {
-				if (fields[idx].javadoc != null) { 
-					count++;
-				}
-			}_%>
+
+ 	#set($count = 0)
+		#foreach ($entity in $searchField)
+			#if($entity.componentType)		
+		#end		
 		
 		<%_ if (count!=0){ _%>
 			$scope.loadAll = function() {
 				$scope.refreshTableList($scope.formParam);
 				};	
 		<%_}_%>
+
 		$scope.resetSearch = function() {
 			$scope.formParam = {};
 			};
+			
 		<%_ var t=0;
 			for (idx in fields) {
 				const fieldType = fields[idx].fieldType;				   
