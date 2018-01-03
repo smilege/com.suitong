@@ -5,7 +5,7 @@ package com.st.entity;
  * 类说明  查询模块
  */
 public class SearchField extends ParentField{
-	private String queryType;//0,1,2
+	private String queryType;//0:精确,1：模糊,2：日期范围
 	private String dataBaseColunmName; 
 	
 	
