@@ -6,7 +6,6 @@ import java.util.Date;
 /*
  * A ${entityName} entity
  */
-
 @Entity
 @Table(name = "${tableName}")
 public class ${entityName} implements Serializable {
