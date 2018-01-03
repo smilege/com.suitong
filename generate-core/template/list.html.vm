@@ -3,78 +3,81 @@
         <div class="wrapper-md">
 			<div class="row">
 				<div class="col-sm-12">
-		#foreach ($entity in $searchField)
-			#set($name ="$entity.name")
-			#set($code ="$entity.code")
-			#set($type ="entity.componentType")
-		##分别判断控件类型
-	    	#if(${type}=="date")
-		    			<div class="form-group m-n">
+#foreach ($entity in $searchField)
+	#set($name ="$entity.name")
+	#set($code ="$entity.code")
+	#set($type ="$entity.componentType")
+##分别判断控件类型
+#if(${type}=="date")
+					<div class="form-group m-n">
 							<label class="control-label">${name}</label>
 							<div class="input-group input-group-time">
 								<input type="text" readonly="readonly" uib-datepicker-popup="{{dateformat}}" 
-								ng-model="${code}" is-open="datePickerOpenStatus.${code}"/>
+								ng-model="formParam.${code}" is-open="datePickerOpenStatus.${code}"/>
 								<span class="input-group-btn">
 									 <button type="button" class="btn btn-default" ng-click="openCalendar('${code}')">
 									 <i class="glyphicon glyphicon-calendar"></i></button>
 								 </span>
 							</div>
 						</div>	   
-		    #elseif(${type}=="select")
-			   			<div class="form-group m-n">
+#elseif(${type}=="select")
+					<div class="form-group m-n">
 							<label class="control-label">${name}</label>
 							   <div class="padder inline input-group more-selects" >
-									  <select class="selectUserAccount" ng-model="${code}">
+									  <select class="selectUserAccount" ng-model="formParam.${code}">
 									  	  <option>${name}值1</option>
 									  	  <option>${name}值2</option>
 									  	  <option>${name}值3</option>
 									</select>
 		                        </div>
 						</div>	
-		    #else
-			   		<div class="form-group m-n">
+#else
+					<div class="form-group m-n">
 							<label class="control-label">${name}</label>
 							<div class="padder inline">
 								<input type="text" class="form-control ng-pristine ng-valid ng-touched" 
-								ng-model="${code}" />
+								ng-model="formParam.${code}" />
 							</div>  
 						</div>		
-		   	 #end		
-		#end
-					 <div class="form-group m-n">
-						<button class="btn btn-info pull-left" ng-click="loadAll()">
-							<span class="glyphicon glyphicon-search"></span>
-							<span data-translate="global.go"></span>
-						</button>
-					</div>
-					<div class="form-group m-n">
-						<button class="btn btn-info pull-left" ng-click="resetSearch()">
+   	 #end		
+#end
+##判断是否有查询的字段
+#if($searchField.size()>0)
+				<div class="form-group m-n">
+					<button class="btn btn-info pull-left" ng-click="loadAll()">
+						<span class="glyphicon glyphicon-search"></span>
+						<span data-translate="global.go"></span>
+					</button>
+				</div>
+				<div class="form-group m-n">
+					<button class="btn btn-info pull-left" ng-click="resetSearch()">
 						<span class="glyphicon glyphicon-refresh"></span>
 						<span data-translate="global.reset"></span>
-						</button>
-					</div>
+					</button>
 				</div>
-		    </div>
-        </div>
-    </form>
-  
+#end
+			</div>
+		  </div>
+     </div>
+  </form>
 
     <div class="wrapper-md">
 		<div class="m-t-n-xs p-b clear">
-	#foreach ($part in $needPart)
-		#if($part=="save") 
+##判断是否需要新增和删除功能
+#foreach ($part in $needPart)
+#if($part=="save") 
 			<button class="btn btn-primary" ng-click="add${entityName}">
                 <span class="glyphicon glyphicon-plus"></span> 
-                <span data-translate="entity.action.add">Create a new ${entityName}</span>
+                <span data-translate="entity.action.add">Create a new ${formatEntityName}</span>
             </button>
-         #elseif($part=="delete") 
+#elseif($part=="delete") 
 			<button class="btn btn-primary" ng-click="batchDelete()">
                 <span class="glyphicon glyphicon-minus"></span> 
                 <span data-translate="global.batchDelete"></span>
             </button>
-         #end
-     #end
-		</div>
+      #end
+#end
+	</div>
         <div tables-model tables-data-model="tablesConfig"></div>
     </div>
 </div>

@@ -11,7 +11,10 @@
         $scope.formParam = {};
 		$scope.datePickerOpenStatus = {};
         $scope.tablesConfig = {
+ #foreach ($part in $needPart)
+	#if($part=="save" || $part=="delete") 
             showCheckBox:true,
+    #end
 			tableWidth:'table-default-width',
             tableTitles:[
 			#foreach ($entity in $listField)
@@ -47,39 +50,32 @@
 				   #end		
 			}
 		};
-
- 	#set($count = 0)
-		#foreach ($entity in $searchField)
-			#if($entity.componentType)		
-		#end		
-		
-		<%_ if (count!=0){ _%>
-			$scope.loadAll = function() {
-				$scope.refreshTableList($scope.formParam);
-				};	
-		<%_}_%>
-
+	##判断是否有查询的字段
+	#if($searchField.size()>0)
+		$scope.loadAll = function() {
+			$scope.refreshTableList($scope.formParam);
+			};	
+	#end
+	
 		$scope.resetSearch = function() {
 			$scope.formParam = {};
 			};
-			
-		<%_ var t=0;
-			for (idx in fields) {
-				const fieldType = fields[idx].fieldType;				   
-				if (fields[idx].javadoc != null) {						
-					if(['Instant', 'ZonedDateTime', 'LocaleDate'].includes(fieldType)){
-						t++;
-					}
-				}
-			}
-			_%>
 		
-		<%_ if (t!=0){ _%>
-			$scope.openCalendar = function (date) {
-				$scope.datePickerOpenStatus[date] = true;
-			};
-		<%_}_%>
+	##判断是否加载日期控件
+	#foreach ($entity in $saveField)
+		#if($entity.componentType=="date")		
+			$velocityCount
+		#end		
+	#end	
+	#if($velocityCount!=1)
+		$scope.openCalendar = function (date) {
+			$scope.datePickerOpenStatus[date] = true;
+		};
+	#end	
 		
+#foreach ($part in $needPart)
+	$part
+	 #if($part=="delete") 
 		$scope.confirmDelete = function(id){
 			 ${entityName}Service.delete<%= entityClass %>(id)
 				.then(function (response){
@@ -87,15 +83,13 @@
 						$scope.loadAll();
 					}
 				});
-		};
-		
-		
+		};	
+    		
 		$scope.delete${entityName} = function(id) {
 			var msg = "global.messages.deleteConfirm";
 			PublicService.showConfirmDialog(msg, "confirmDelete", $scope, id);
         };
-		
-		
+        
 		  $scope.batchDelete = function() {
         	$scope.choseArr = $scope.getCheckValues('delFlag').check;
         	$scope.choseArrParam = $scope.getCheckValues('delFlag').checkedParamFlags;
@@ -112,20 +106,21 @@
 					}
 				});
 		};
-		
-		
-		
+
+	#elseif($part=="save") 
         $scope.add${entityName} = function(){
-            $state.go('app.<%= entityStateName %>-edit',{id:null});
+            $state.go('app.${formatEntityName}-edit',{id:null});
         };
 
         $scope.edit${entityName} = function (id) {
-            $state.go('app.<%= entityStateName %>-edit',{id:id});
+            $state.go('app.${formatEntityName}-edit',{id:id});
         };
 		
+	#elseif($part=="detail") 
 		$scope.show${entityName} = function (id) {
-        	$state.go('app.<%= entityStateName %>-detail',{id:id});
+        	$state.go('app.${formatEntityName}-detail',{id:id});
         };
-
+	 #end
+   #end	
     }
 })();

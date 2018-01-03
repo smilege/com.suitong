@@ -66,11 +66,15 @@ public class GenerateCode {
     	String needPart = prop.getString("needPart");
     	List<String> needList = new ArrayList<String>();
     	if (StringUtils.isNotBlank(needPart)) {
-    		 needList.add(needPart.toString());
+    		String[] part = needPart.split(",");
+    		for (String s : part) {
+    			needList.add(s);
+			}
     	}
 		tableEntity.setModule(module);
 		tableEntity.setTableName(tableName);
 		tableEntity.setEntityName(entityName);
+		tableEntity.setFormatEntityName(formatEntityName);
 		tableEntity.setNeedPart(needList);
 		
 		//根据模块功能定制数据
@@ -99,6 +103,7 @@ public class GenerateCode {
 				searchField.setCode(code);
 				searchField.setName(name);
 				searchField.setComponentType(componentType);
+				searchField.setDataBaseColunmName(columnName);				
 				searchField.setQueryType(search);
 				searchList.add(searchField);
 			}
@@ -226,7 +231,7 @@ public class GenerateCode {
 			for (String needPart : part) {
 			if (needPart.contains("manage")) {
 					templates.add("template/list.html.vm");
-					templates.add("template/list.controller.js.vm");
+				//	templates.add("template/list.controller.js.vm");
 				}
 				if (needPart.contains("save")) {
 					templates.add("template/save.html.vm");

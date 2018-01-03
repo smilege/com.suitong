@@ -5,7 +5,8 @@ package com.st.entity;
  * 类说明  查询模块
  */
 public class SearchField extends ParentField{
-	private String queryType;
+	private String queryType;//0,1,2
+	private String dataBaseColunmName; 
 	
 	
 	public String getQueryType() {
@@ -13,6 +14,12 @@ public class SearchField extends ParentField{
 	}
 	public void setQueryType(String queryType) {
 		this.queryType = queryType;
+	}
+	public String getDataBaseColunmName() {
+		return dataBaseColunmName;
+	}
+	public void setDataBaseColunmName(String dataBaseColunmName) {
+		this.dataBaseColunmName = dataBaseColunmName;
 	}
 	
 	

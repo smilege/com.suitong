@@ -16,6 +16,9 @@ public class ${entityName} implements Serializable {
 	//$entity.name
 	 @Column(name="${entity.dataBaseColunmName}")
 	private $entity.dataType $entity.code;
+	select * from c_sex like "";
+	
+	select * from c_sex = "";
 #end
 
 #foreach ($entity in $javaEntityList)
