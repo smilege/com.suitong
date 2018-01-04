@@ -59,10 +59,26 @@ public class GenerateCode {
     	if (StringUtils.isBlank(entityName)) {
     		entityName = StringUtil.tableNameAsClassName(tableName);
     	}
+    	//是否分页
     	String isPage = prop.getString("isPage");
     	if (!Constant.N.equalsIgnoreCase(isPage)) {
     		tableEntity.setIsPage(Constant.Y);
     	}
+    	//是否国际化
+    	String translate = prop.getString("translate");
+    	if (!Constant.N.equalsIgnoreCase(translate)) {
+    		translate = Constant.Y;
+    	}
+    	//生成哪部分代码（前/后端，全部）
+    	String includeCodes = prop.getString("includeCodes");
+    	List<String> codesList = new ArrayList<String>();
+    	if (StringUtils.isNotBlank(includeCodes)) {
+    		String[] parts = includeCodes.split(",");
+    		for (String s : parts) {
+    			codesList.add(s);
+			}
+    	}
+    	//生成代码的功能
     	String needPart = prop.getString("needPart");
     	List<String> needList = new ArrayList<String>();
     	if (StringUtils.isNotBlank(needPart)) {
@@ -124,7 +140,7 @@ public class GenerateCode {
 				saveField.setCode(code);
 				saveField.setName(name);
 				saveField.setComponentType(componentType);
-				saveField = HandleRegex(saveField,regexList,regexMap,regex);
+			//	saveField = HandleRegex(saveField,regexList,regexMap,regex);
 				saveList.add(saveField);
 			}
 			
@@ -152,7 +168,7 @@ public class GenerateCode {
 		tableEntity.setSearchList(searchList);
 		tableEntity.setDetailList(detailList);
 		tableEntity.setJavaEntityList(javaEntityList);
-		
+	
 		PropertiesUtil pu = new PropertiesUtil("config");
 		String packageName = pu.getValue("package");
 		
@@ -171,8 +187,8 @@ public class GenerateCode {
 		map.put("javaEntityList", tableEntity.getJavaEntityList());
         VelocityContext context = new VelocityContext(map);
         
-        //获取模板列表
-		List<String> templates = getTemplates(needList);
+        //获取模板
+		List<String> templates = getTemplates(needList,codesList,translate);
 		for(String template : templates){
 			//渲染模板
 			StringWriter sw = new StringWriter();
@@ -224,32 +240,55 @@ public class GenerateCode {
 		return null;
 	}
 
-	public static List<String> getTemplates(List<String> part){
+	public static List<String> getTemplates(List<String> partList, List<String> codesList, String isTranslate){
 		List<String> templates = new ArrayList<String>();
-		//根据功能选择对应的前端模板
-		if(null!=part && part.size()>0){
-			for (String needPart : part) {
-			if (needPart.contains("manage")) {
-					templates.add("template/list.html.vm");
-				//	templates.add("template/list.controller.js.vm");
+		if(null!=codesList && codesList.size()>0){
+			for (String codes : codesList) {
+				templates = chooseTemplates(codes, partList);
+			}
+		}else{
+			templates =	chooseTemplates(null, partList);
+			}
+		//加载国际化json文件
+		if ("Constant.Y".equalsIgnoreCase(isTranslate)) {
+			templates.add("template/cn.json.vm");
+			templates.add("template/en.json.vm");
+			}
+		return templates;
+		}
+	
+    //选择前后端模板
+	public static List<String> chooseTemplates(String codes,List<String> partList){
+		List<String> templates = new ArrayList<String>();
+		if ("client".equalsIgnoreCase(codes) || codes==null){
+			//需要前端代码，并根据功能选择对应的前端模板
+			if(null!=partList && partList.size()>0){
+				for (String needPart : partList) {
+					if (needPart.contains("manage")) {
+							templates.add("template/list.html.vm");
+							templates.add("template/list.controller.js.vm");
+						}
+						if (needPart.contains("save")) {
+							templates.add("template/save.html.vm");
+							templates.add("template/save.controller.js.vm");
+						}
+						if (needPart.contains("detail")) {
+							templates.add("template/detail.html.vm");
+							templates.add("template/detail.controller.js.vm");
+						}
 				}
-				if (needPart.contains("save")) {
-					templates.add("template/save.html.vm");
-					templates.add("template/save.controller.js.vm");
-				}
-				if (needPart.contains("detail")) {
-					templates.add("template/detail.html.vm");
-					templates.add("template/detail.controller.js.vm");
-				}
+				templates.add("template/state.js.vm");
+				templates.add("template/service.js.vm");
 			}
 		}
-		//后台模板
-		templates.add("template/Entity.java.vm");
-		templates.add("template/Controller.java.vm");
-		templates.add("template/Service.java.vm");
-		templates.add("template/ServiceImpl.java.vm");
-		templates.add("template/Dao.java.vm");
+		if ("server".equalsIgnoreCase(codes) || codes==null){
+			//需要后端代码
+			templates.add("template/Entity.java.vm");
+			templates.add("template/Controller.java.vm");
+			templates.add("template/Service.java.vm");
+			templates.add("template/ServiceImpl.java.vm");
+			templates.add("template/Dao.java.vm");
+		}
 		return templates;
 	}
-	
 }

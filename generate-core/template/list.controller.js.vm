@@ -1,3 +1,5 @@
+#set($count = 0)
+#set($dateCount = 0)
 (function() {
     'use strict';
 
@@ -11,73 +13,88 @@
         $scope.formParam = {};
 		$scope.datePickerOpenStatus = {};
         $scope.tablesConfig = {
- #foreach ($part in $needPart)
-	#if($part=="save" || $part=="delete") 
-            showCheckBox:true,
-    #end
+#foreach ($part in $needPart)
+#if($part=="save" || $part=="delete") 
+	   #set($count = $count+1)
+#end
+#end
+#if($count!=0)
+ 			showCheckBox:true,
+#end
 			tableWidth:'table-default-width',
             tableTitles:[
-			#foreach ($entity in $listField)
-				#set($name ="$entity.name")
-				#set($code ="$entity.code")
-				#set($type ="entity.componentType")
-				
-				#if(${type}=="date")
+#foreach ($entity in $listField)
+	#set($name ="$entity.name")
+	#set($code ="$entity.code")
+	#set($type ="$entity.componentType")				
+#if(${type}=="date")
                 {title:"${name}", filed: '${code}',type:'date',width:'table-item-pre-1'},  
-				#else
+#else
 				{title:"${name}", filed: '${code}',type:'text',width:'table-item-pre-1'},    
-			   #end		
-			#end
+#end		
+#end
                 {title:"entity.action.operation",filed:'operation',type:'btn',width:'table-item-pre-1',actions:[
-			#foreach ($part in $needPart)
-                #if($part=="save")
-                    {actionName:'edit${entityName}(item.id)',name:'entity.action.edit'},
-                #elseif($part=="detail") 
-                    {actionName:'show${entityName}(item.id)',name:'entity.action.detail'},
-                #elseif($part=="delete") 
-                    {actionName:'delete${entityName}(item.id)',name:'entity.action.delete'}
-	 			#end		
-			#end
+#foreach ($part in $needPart)
+  #if($part=="save")
+                {actionName:'edit${entityName}(item.id)',name:'entity.action.edit'},
+  #elseif($part=="detail") 
+                {actionName:'show${entityName}(item.id)',name:'entity.action.detail'},
+  #elseif($part=="delete") 
+                {actionName:'delete${entityName}(item.id)',name:'entity.action.delete'}
+  #end		
+#end
                     ]}
                     ],
             url:'api/${formatEntityName}/list${entityName}',
-            
 			formParams:{
-				#foreach ($entity in $searchField)
-					#set($name ="$entity.name")
-					#set($componentType ="$entity.componentType")
-						${name} : $scope.formParam.${name},					
-				   #end		
+#foreach ($entity in $searchField)
+				${entity.code} : $scope.formParam.${entity.code},					
+#end		
 			}
 		};
-	##判断是否有查询的字段
-	#if($searchField.size()>0)
+	
+##判断是否有查询的字段
+#if($searchField.size()>0)
 		$scope.loadAll = function() {
 			$scope.refreshTableList($scope.formParam);
 			};	
-	#end
+#end
 	
 		$scope.resetSearch = function() {
 			$scope.formParam = {};
 			};
 		
-	##判断是否加载日期控件
-	#foreach ($entity in $saveField)
-		#if($entity.componentType=="date")		
-			$velocityCount
-		#end		
-	#end	
-	#if($velocityCount!=1)
-		$scope.openCalendar = function (date) {
+##判断是否加载日期控件
+#foreach($entity in $saveField)
+ #if($entity.componentType=="date")
+  #set($dateCount = $dateCount+1)
+ #end		
+#end
+#if($dateCount!=0)
+	$scope.openCalendar = function (date) {
 			$scope.datePickerOpenStatus[date] = true;
 		};
-	#end	
+#end	
 		
 #foreach ($part in $needPart)
-	$part
-	 #if($part=="delete") 
+#if($part=="save") 
+        $scope.add${entityName} = function(){
+            $state.go('app.${entityName}edit',{id:""});
+        };
+
+        $scope.edit${entityName} = function (id) {
+            $state.go("app.${entityName}-edit",{id:id});
+        };
+		
+#elseif($part=="detail") 
+		$scope.show${entityName} = function (id) {
+        	'$state'.go("app.${formatEntityName}-detail",{id:id});
+        	\$state.go("app.${formatEntityName}-detail",{id:id});
+        	 $state.go("app.${formatEntityName}-detail",{id:id});
+        };
+#elseif($part=="delete") 
 		$scope.confirmDelete = function(id){
-			 ${entityName}Service.delete<%= entityClass %>(id)
+			 ${entityName}Service.delete${entityName}(id)
 				.then(function (response){
 					if(response.statusCode === "0000"){
 						$scope.loadAll();
@@ -99,28 +116,14 @@
         
         $scope.confirmBatchDelete = function(checkeds){
         	var delObj = {"ids":checkeds};
-			 ${entityName}Service.batchDelete<%= entityClass %>(delObj)
+			 ${entityName}Service.batchDelete${entityName}(delObj)
 				.then(function (response){
 					if(response.statusCode === "0000"){
 						$scope.loadAll();
 					}
 				});
 		};
-
-	#elseif($part=="save") 
-        $scope.add${entityName} = function(){
-            $state.go('app.${formatEntityName}-edit',{id:null});
-        };
-
-        $scope.edit${entityName} = function (id) {
-            $state.go('app.${formatEntityName}-edit',{id:id});
-        };
-		
-	#elseif($part=="detail") 
-		$scope.show${entityName} = function (id) {
-        	$state.go('app.${formatEntityName}-detail',{id:id});
-        };
-	 #end
-   #end	
+#end
+#end	
     }
 })();

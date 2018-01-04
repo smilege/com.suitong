@@ -153,6 +153,13 @@ public class StringUtil {
 		if(template.contains("state.js.vm")){
 			return "client"+ File.separator +"js" + File.separator + StringUtil.lowCaseByFirst(className) + "state.js";
 		}
+		//json文件
+		if(template.contains("cn.json.vm")){
+			return "json"+ File.separator +"cn" + File.separator + StringUtil.lowCaseByFirst(className) + ".json";
+		}
+		if(template.contains("en.json.vm")){
+			return "json"+ File.separator +"en" + File.separator + StringUtil.lowCaseByFirst(className) + ".json";
+		}
 
 		return null;
 	}
