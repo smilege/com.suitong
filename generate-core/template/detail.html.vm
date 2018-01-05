@@ -1,7 +1,13 @@
-<div class="panel ng-scope re-panel" ng-controller="${entityName}DetailController">
+
+
+#if(${hrefMethod}!="openWindow")
+<div class="panel ng-scope save-panel" ng-controller="${entityName}DetailController">
+#else
+<div class="panel ng-scope save-panel">
+#end
 	<form class="form-horizontal form-inline">
         <div class="modal-header">
-           <h4 class="modal-title" data-translate="detail.title">详情页面</h4>
+           <h4 class="modal-title" data-translate="detailTitle">详情页面</h4>
         </div>
         <div class="modal-body">    
 #foreach ($entity in $saveField)
@@ -17,9 +23,16 @@
 #end
 			</div>
 		<div class="modal-footer">
+##跳转方式
+#if(${hrefMethod}!="openWindow") 			
 			<button type="button" ui-sref="app.${formatEntityName}" class="btn btn-primary btn-default" >
-			<span class="glyphicon glyphicon-arrow-left"></span>&nbsp;<span data-translate="entity.action.back">Back</span>
+				<span class="glyphicon glyphicon-arrow-left"></span>&nbsp;<span data-translate="entity.action.back">Back</span>
 			</button>
+#else			
+			 <button type="button" ng-click="clear()" data-dismiss="modal" class="btn btn-danger">
+                <span class="glyphicon glyphicon-ban-circle"></span>&nbsp;<span data-translate="entity.action.cancel">Cancel</span>
+            </button>
+#end
 		</div>
 	</form>
 </div>

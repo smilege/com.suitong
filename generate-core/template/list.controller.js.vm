@@ -1,8 +1,11 @@
+
+
 #set($count = 0)
 #set($dateCount = 0)
+#set($state = "$state")
+#set($go = ".go")
 (function() {
     'use strict';
-
     angular
         .module('devplatformApp')
         .controller('${entityName}Controller', ${entityName}Controller);
@@ -79,18 +82,16 @@
 #foreach ($part in $needPart)
 #if($part=="save") 
         $scope.add${entityName} = function(){
-            $state.go('app.${entityName}edit',{id:""});
+            $state$go('app.${formatEntityName}-edit',{id:""});
         };
 
         $scope.edit${entityName} = function (id) {
-            $state.go("app.${entityName}-edit",{id:id});
+            $state$go("app.${formatEntityName}-edit",{id:id});
         };
 		
 #elseif($part=="detail") 
 		$scope.show${entityName} = function (id) {
-        	'$state'.go("app.${formatEntityName}-detail",{id:id});
-        	\$state.go("app.${formatEntityName}-detail",{id:id});
-        	 $state.go("app.${formatEntityName}-detail",{id:id});
+        	 $state$go("app.${formatEntityName}-detail",{id:id});
         };
 #elseif($part=="delete") 
 		$scope.confirmDelete = function(id){

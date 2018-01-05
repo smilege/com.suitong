@@ -2,15 +2,22 @@ package com.st.util;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.RandomAccessFile;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
+
+import com.st.entity.JavaEntity;
 
 /**
  * 字符串相关的常用方法
@@ -147,18 +154,18 @@ public class StringUtil {
 		}
 		
 		if(template.contains("service.js.vm")){
-			return "client"+ File.separator +"js" + File.separator + StringUtil.lowCaseByFirst(className) + "service.js";
+			return "client"+ File.separator +"js" + File.separator + StringUtil.lowCaseByFirst(className) + ".service.js";
 		}
 		
 		if(template.contains("state.js.vm")){
-			return "client"+ File.separator +"js" + File.separator + StringUtil.lowCaseByFirst(className) + "state.js";
+			return "client"+ File.separator +"js" + File.separator + StringUtil.lowCaseByFirst(className) + ".state.js";
 		}
 		//json文件
 		if(template.contains("cn.json.vm")){
-			return "json"+ File.separator +"cn" + File.separator + StringUtil.lowCaseByFirst(className) + ".json";
+			return "i18n"+ File.separator +"zh-cn" + File.separator + StringUtil.lowCaseByFirst(className) + ".json";
 		}
 		if(template.contains("en.json.vm")){
-			return "json"+ File.separator +"en" + File.separator + StringUtil.lowCaseByFirst(className) + ".json";
+			return "i18n"+ File.separator +"en" + File.separator + StringUtil.lowCaseByFirst(className) + ".json";
 		}
 
 		return null;
@@ -379,4 +386,47 @@ public class StringUtil {
 			}
 		}
 	}
+	
+	  
+	/** 
+	 *   删除国际化字符
+	 * @param fileName 文件路径 
+	 * @throws IOException 
+	 */ 
+	public static void deleteTranslate(String fileName) throws IOException{  
+		File file = new File(fileName);
+        File outFile = File.createTempFile("name", ".tmp"); // 临时文件   
+        FileInputStream fis = new FileInputStream(file);  
+        FileOutputStream fos = new FileOutputStream(outFile);  
+        String str = StringUtil.readFileToString(file);
+        if(fileName.contains("save.html.vm")){
+        	String template2 = "data-translate=\"devplatformApp.title.${formatEntityName}\"";
+        	String result2 = escapeExprSpecialWord(template2);
+        	str = str.replaceAll(result2, "");
+        }
+        String template = "data-translate=\"devplatformApp.${formatEntityName}.${code}\"";
+        String result = escapeExprSpecialWord(template);
+        str = str.replaceAll(result, "");
+    	fos.write(str.getBytes(Constant.CHAR_SET));
+    	fos.close(); 
+		fis.close();
+        // 删除原始文件  
+        file.delete();  
+        // 把临时文件改名为原文件名  
+        outFile.renameTo(file);  
+	}
+	
+	//处理特殊字符的转义
+	public static String escapeExprSpecialWord(String keyword) {  
+	    if (StringUtils.isNotBlank(keyword)) {  
+	        String[] fbsArr = { "\\", "$", "(", ")", "*", "+", ".", "[", "]", "?", "^", "{", "}", "|" };  
+	        for (String key : fbsArr) {  
+	            if (keyword.contains(key)) {  
+	                keyword = keyword.replace(key, "\\" + key);  
+	            }  
+	        }  
+	    }  
+	    return keyword;  
+	}  
+	
 }

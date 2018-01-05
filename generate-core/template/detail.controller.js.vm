@@ -1,14 +1,18 @@
+
+
 #set($dateCount = 0)
+#set($state = "$state")
+#set($go = ".go")
 (function() {
     'use strict';
     angular
         .module('devplatformApp')
         .controller('${entityName}DetailController', ${entityName}DetailController);
 
-    ${entityName}DetailController.$inject = ['${entityName}Service', '$scope', '$stateParams','$state', 'ngDialog', '$timeout', 'PublicService'];
+    ${entityName}DetailController.$inject = ['${entityName}Service', '$scope', '$stateParams','$state', 'ngDialog', '$timeout', 'PublicService','$uibModalInstance'];
 
 
-    function ${entityName}DetailController(${entityName}Service, $scope, $stateParams, $state, ngDialog, $timeout, PublicService) {
+    function ${entityName}DetailController(${entityName}Service, $scope, $stateParams, $state, ngDialog, $timeout, PublicService,$uibModalInstance) {
 		$scope.datePickerOpenStatus = {};
         if ($stateParams.id) {
             ${entityName}Service.get${entityName}($stateParams.id).then(function (response) {
@@ -24,5 +28,11 @@
 				}
             });
         }
-    }
+#if(${hrefMethod}=="openWindow") 
+   $scope.clear = function() {
+        $uibModalInstance.dismiss('cancel');
+       $state$go('app.${formatEntityName}');
+    };
+#end
+    };
 })();

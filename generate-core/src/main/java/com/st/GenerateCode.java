@@ -51,6 +51,7 @@ public class GenerateCode {
 	 */
 	public static void generatorCode(JSONObject prop) throws Exception{
 		TableEntity tableEntity = new TableEntity();
+		String appName = prop.getString("appName");
 		String module = prop.getString("module");
     	String tableName = prop.getString("tableName");
     	String entityName = StringUtil.upperCaseByFirst(prop.getString("entityName"));
@@ -69,6 +70,8 @@ public class GenerateCode {
     	if (!Constant.N.equalsIgnoreCase(translate)) {
     		translate = Constant.Y;
     	}
+    	//跳转方式，弹窗（openWindow）还是页面跳转
+		String hrefMethod = prop.getString("hrefMethod");
     	//生成哪部分代码（前/后端，全部）
     	String includeCodes = prop.getString("includeCodes");
     	List<String> codesList = new ArrayList<String>();
@@ -171,10 +174,11 @@ public class GenerateCode {
 	
 		PropertiesUtil pu = new PropertiesUtil("config");
 		String packageName = pu.getValue("package");
-		
+
 		//封装模板数据
 		Map<String, Object> map = new HashMap<>();
 		map.put("packageName", packageName);
+		map.put("appName", appName);
 		map.put("module", module);
 		map.put("tableName", tableEntity.getTableName());
 		map.put("entityName", tableEntity.getEntityName());
@@ -184,12 +188,17 @@ public class GenerateCode {
 		map.put("saveField", tableEntity.getSaveList());
 		map.put("listField", tableEntity.getListList());
 		map.put("isPage", tableEntity.getIsPage());
+		map.put("hrefMethod", hrefMethod);
 		map.put("javaEntityList", tableEntity.getJavaEntityList());
         VelocityContext context = new VelocityContext(map);
         
         //获取模板
 		List<String> templates = getTemplates(needList,codesList,translate);
 		for(String template : templates){
+			//如果不需要国际化，则将模板的translate去掉
+			if (!"Y".equalsIgnoreCase(translate)) {
+				StringUtil.deleteTranslate( template);
+			}
 			//渲染模板
 			StringWriter sw = new StringWriter();
 			Template tpl = Velocity.getTemplate(template, "UTF-8");
@@ -244,21 +253,16 @@ public class GenerateCode {
 		List<String> templates = new ArrayList<String>();
 		if(null!=codesList && codesList.size()>0){
 			for (String codes : codesList) {
-				templates = chooseTemplates(codes, partList);
+				templates = chooseTemplates(codes, partList,isTranslate);
 			}
 		}else{
-			templates =	chooseTemplates(null, partList);
-			}
-		//加载国际化json文件
-		if ("Constant.Y".equalsIgnoreCase(isTranslate)) {
-			templates.add("template/cn.json.vm");
-			templates.add("template/en.json.vm");
+			templates =	chooseTemplates(null, partList,isTranslate);
 			}
 		return templates;
 		}
 	
     //选择前后端模板
-	public static List<String> chooseTemplates(String codes,List<String> partList){
+	public static List<String> chooseTemplates(String codes,List<String> partList, String isTranslate){
 		List<String> templates = new ArrayList<String>();
 		if ("client".equalsIgnoreCase(codes) || codes==null){
 			//需要前端代码，并根据功能选择对应的前端模板
@@ -276,18 +280,34 @@ public class GenerateCode {
 							templates.add("template/detail.html.vm");
 							templates.add("template/detail.controller.js.vm");
 						}
-				}
+					}
+				//加载国际化json文件
+				if ("Y".equalsIgnoreCase(isTranslate)) {
+					templates.add("template/cn.json.vm");
+					templates.add("template/en.json.vm");
+					}
 				templates.add("template/state.js.vm");
 				templates.add("template/service.js.vm");
+			}else{ //如果功能块没写，默认全部加载
+				String[] needArr = {"manage","save","detail","delete","import","export"};  
+				partList = java.util.Arrays.asList(needArr);
+				chooseTemplates(codes, partList,isTranslate);
 			}
+			
 		}
 		if ("server".equalsIgnoreCase(codes) || codes==null){
 			//需要后端代码
-			templates.add("template/Entity.java.vm");
-			templates.add("template/Controller.java.vm");
-			templates.add("template/Service.java.vm");
-			templates.add("template/ServiceImpl.java.vm");
-			templates.add("template/Dao.java.vm");
+			if(null!=partList && partList.size()>0){
+				templates.add("template/Controller.java.vm");
+				templates.add("template/Service.java.vm");
+				templates.add("template/ServiceImpl.java.vm");
+				templates.add("template/Dao.java.vm");
+				templates.add("template/Entity.java.vm");
+			}else{ //如果功能块没写，默认全部加载
+				String[] needArr = {"manage","save","detail","delete","import","export"};  
+				partList = java.util.Arrays.asList(needArr);
+				chooseTemplates(codes, partList,isTranslate);
+			}
 		}
 		return templates;
 	}

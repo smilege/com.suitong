@@ -1,7 +1,14 @@
+
+
+
+#if(${hrefMethod}!="openWindow")
 <div class="panel ng-scope save-panel" ng-controller="${entityName}EditController">
+#else
+<div class="panel ng-scope save-panel">
+#end
 	<form class="form-horizontal form-inline" role="form" ng-submit="save()" verify-scope>
         <div class="modal-header">
-           <h4 class="modal-title" data-translate="detail.title">编辑页面</h4>
+           <h4 class="modal-title" >编辑${entityName}</h4>
         </div>
         <div class="modal-body">         
 #foreach ($entity in $saveField)
@@ -12,7 +19,7 @@
 #if(${type}=="date")
 					<div class="col-sm-12 col-info">
 						<div class="form-group m-n">
-				            <label class="control-label" data-translate="<%= translationKey %>">${name}"></label>
+				            <label class="control-label" >${name}"></label>
 							<div class="input-group input-group-time input-group-time2">
 				                <input readonly="readonly" type="text" name="${code}" required="required"
 				                		datetime-picker="{{dateformat}}" ng-model="${formatEntityName}.${code}" is-open="datePickerOpenStatus.${code}"/>
@@ -24,9 +31,9 @@
 					 </div>
 #elseif(${type}=="select")
 					<div class="form-group m-n">
-							<label class="control-label">${name}</label>
+							<label class="control-label" >${name}</label>
 							   <div class="padder inline input-group more-selects" >
-									  <select class="selectUserAccount" ng-model="${formatEntityName}.${code}">
+									  <select class="selectUserAccount" ng-model="formParam.${code}">
 									  	  <option>${name}值1</option>
 									  	  <option>${name}值2</option>
 									  	  <option>${name}值3</option>
@@ -36,7 +43,7 @@
 #else
                     <div class="col-sm-12 col-info">
 						<div class="form-group m-n">
-                            <label class="control-label" data-translate="<%= translationKey %>">${name}</label>
+                            <label class="control-label" >${name}</label>
 							<input type="text" class="form-control" ng-model="${formatEntityName}.${code}" />
                         </div>                
                     </div>
@@ -44,12 +51,20 @@
 #end
 		</div>
 		<div class="modal-footer">
-			<button type="button" ui-sref="app.${formatEntityName}" class="btn btn-danger">
-				<span class="glyphicon glyphicon-ban-circle"></span>&nbsp;<span data-translate="entity.action.cancel">Cancel</span>
-			</button>
 			<button type="submit" ng-verify class="btn btn-primary">
 				<span class="glyphicon glyphicon-save"></span>&nbsp;<span data-translate="entity.action.save">Save</span>
 			</button>
+##跳转方式
+#if(${hrefMethod}!="openWindow") 
+			<button type="button" ui-sref="app.${formatEntityName}" class="btn btn-danger">
+				<span class="glyphicon glyphicon-ban-circle"></span>&nbsp;<span data-translate="entity.action.cancel">Cancel</span>
+			</button>
+#else			
+			 <button type="button" ng-click="clear()" data-dismiss="modal" class="btn btn-danger">
+                <span class="glyphicon glyphicon-ban-circle"></span>&nbsp;<span data-translate="entity.action.cancel">Cancel</span>
+            </button>
+#end
+			
 		 </div>
 	</form>
 </div>

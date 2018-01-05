@@ -9,6 +9,7 @@ public class JavaEntity extends ParentField {
 	private String dataBaseColunmName; //如果名字是clounmName模板会解析不了，奇葩
 	private String formatterCode;
 
+	
 	public String getDataType() {
 		return dataType;
 	}

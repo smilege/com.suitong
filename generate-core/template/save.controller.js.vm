@@ -1,14 +1,19 @@
+
+
+
 #set($dateCount = 0)
+#set($state = "$state")
+#set($go = ".go")
 (function() {
     'use strict';
     angular
         .module('devplatformApp')
         .controller('${entityName}EditController', ${entityName}EditController);
 
-    ${entityName}EditController.$inject = ['${entityName}Service', '$scope', '$stateParams','$state', 'ngDialog', '$timeout', 'PublicService'];
+    ${entityName}EditController.$inject = ['${entityName}Service', '$scope', '$stateParams','$state', 'ngDialog', '$timeout', 'PublicService','$uibModalInstance'];
 
 
-    function ${entityName}EditController(${entityName}Service, $scope, $stateParams, $state, ngDialog, $timeout, PublicService) {
+    function ${entityName}EditController(${entityName}Service, $scope, $stateParams, $state, ngDialog, $timeout, PublicService,$uibModalInstance) {
 		$scope.datePickerOpenStatus = {};
         if ($stateParams.id) {
             ${entityName}Service.get${entityName}($stateParams.id).then(function (response) {
@@ -27,13 +32,13 @@
 
         $scope.save = function() {
             $scope.isSaving = true;
-             $scope.message = "global.saveSuccess";        
+            $scope.message = "global.saveSuccess";        
             ${entityName}Service.update${entityName}($scope.${formatEntityName}).then(function (response) {
                 if (response.statusCode === '0000') {
                     PublicService.showDialogTimeout($scope.message);
                     $timeout(function () {
                         ngDialog.close();
-                        $state.go('app.${formatEntityName}');
+                        $state$go('app.${formatEntityName}');
                     }, 2000);
                 } else {
                     $scope.isSaving = false;
@@ -45,14 +50,21 @@
 		
 ##判断是否加载日期控件
 #foreach($entity in $saveField)
- #if($entity.componentType=="date")
-  #set($dateCount = $dateCount+1)
- #end		
+  #if($entity.componentType=="date")
+	 #set($dateCount = $dateCount+1)
+  #end		
 #end
 #if($dateCount!=0)
-			$scope.openCalendar = function (date) {
-				$scope.datePickerOpenStatus[date] = true;
-			};
+	$scope.openCalendar = function (date) {
+		$scope.datePickerOpenStatus[date] = true;
+	};
+#end
+
+#if(${hrefMethod}=="openWindow") 
+   $scope.clear = function() {
+        $uibModalInstance.dismiss('cancel');
+        $state$go('app.${formatEntityName}');
+    };
 #end
     }
 })();

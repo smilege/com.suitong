@@ -1,3 +1,5 @@
+
+
 package ${packageName}.entity;
 
 import java.io.Serializable;
