@@ -1,0 +1,22 @@
+package ${packageName}.service.mapper;
+
+import ${packageName}.domain.${entityName};
+import ${packageName}.service.dto.${entityName}DTO;
+import org.mapstruct.Mapper;
+
+/*
+ * Mapper for the entity ${entityName} and its DTO ${entityName}DTO.
+ */
+
+@Mapper(componentModel = "spring", uses = {})
+public interface ${entityName}Mapper extends EntityMapper <${entityName}DTO, ${entityName}> {
+
+    default ${entityName} fromId(String id) {
+        if (id == null) {
+            return null;
+        }
+		${entityName} ${formatEntityName} = new ${entityName}();
+        ${formatEntityName}.setId(id);
+        return ${formatEntityName};
+    }
+}

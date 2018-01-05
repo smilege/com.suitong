@@ -1,0 +1,35 @@
+package ${packageName}.service.dto;
+
+import java.io.Serializable;
+import java.util.Date;
+
+/*
+ * A DTO for the ${entityName} entity.
+ */
+
+public class ${entityName} implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    //id
+	private String id;
+#foreach ($entity in $javaEntityList)
+	//$entity.name
+	private $entity.dataType $entity.code;
+#end
+
+	public String getId() {
+        return id;
+	}
+	public void setId(String id) {
+        this.id = id;
+	}
+#foreach ($entity in $javaEntityList)
+	public void set${entity.formatterCode}($entity.dataType $entity.code) {
+		this.$entity.code = $entity.code;
+	}
+	public $entity.dataType get${entity.formatterCode}() {
+		return $entity.code;
+	}
+#end
+}
