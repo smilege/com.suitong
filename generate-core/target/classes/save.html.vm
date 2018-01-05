@@ -1,67 +1,89 @@
-<%#
- Copyright 2013-2017 the original author or authors from the JHipster project.
 
- This file is part of the JHipster project, see https://jhipster.github.io/
- for more information.
 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
 
-      http://www.apache.org/licenses/LICENSE-2.0
 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
--%>
-<%
-const keyPrefix = angularAppName + '.'+ entityTranslationKey + '.';
-const ngValidators = './ng_validators';
-%>
-<div class="panel ng-scope save-panel" ng-controller="<%= entityAngularName %>EditController">
-	<form class="form-horizontal form-inline" name="editForm " role="form" novalidate ng-submit="save()" verify-scope>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#if(${hrefMethod}!="openWindow")
+<div class="panel ng-scope save-panel" ng-controller="${entityName}EditController">
+#else
+<div class="panel ng-scope save-panel">
+#end
+	<form class="form-horizontal form-inline" role="form" ng-submit="save()" verify-scope>
         <div class="modal-header">
-           <h4 class="modal-title" data-translate="<%= keyPrefix %>detail.title">Act Activity</h4>
+           <h4 class="modal-title" >编辑${entityName}</h4>
         </div>
         <div class="modal-body">         
-					 <%_ for (idx in fields) {
-						const fieldName = fields[idx].fieldName;
-						const fieldNameCapitalized = fields[idx].fieldNameCapitalized;
-						const fieldNameHumanized = fields[idx].fieldNameHumanized;
-						const fieldType = fields[idx].fieldType;
-						const translationKey = keyPrefix + fieldName;
-					 if(['Instant', 'ZonedDateTime'].includes(fieldType)){
-					_%>
+#foreach ($entity in $saveField)
+#set($name ="$entity.name")
+#set($code ="$entity.code")
+#set($type ="$entity.componentType")
+##分别判断控件类型
+#if(${type}=="date")
 					<div class="col-sm-12 col-info">
 						<div class="form-group m-n">
-				            <label class="control-label" data-translate="<%= translationKey %>"><%= fieldName %>" for="field_<%= fieldName %>"></label>
+				            <label class="control-label" >${name}"></label>
 							<div class="input-group input-group-time input-group-time2">
-				                <input  id="field_<%= fieldName %>" readonly="readonly" type="text" name="<%= fieldName %>" required="required" ng-change="checkStartTime()" datetime-picker="{{dateformat}}" ng-model="<%= entityInstance %>.<%= fieldName %>" is-open="datePickerOpenStatus.<%= fieldName %>"/>
+				                <input readonly="readonly" type="text" name="${code}" required="required"
+				                		datetime-picker="{{dateformat}}" ng-model="${formatEntityName}.${code}" is-open="datePickerOpenStatus.${code}"/>
 				                <span class="input-group-btn">
-				                      <button type="button" class="btn btn-default" ng-click="openCalendar('<%= fieldName %>')"><i class="glyphicon glyphicon-calendar"></i></button> 
+				                      <button type="button" class="btn btn-default" ng-click="openCalendar('${code}')"><i class="glyphicon glyphicon-calendar"></i></button> 
 								</span> 
 							</div>								            
 						</div>
 					 </div>
-					<%_ } else {_%>
+#elseif(${type}=="select")
+					<div class="form-group m-n">
+							<label class="control-label" >${name}</label>
+							   <div class="padder inline input-group more-selects" >
+									  <select class="selectUserAccount" ng-model="formParam.${code}">
+									  	  <option>${name}值1</option>
+									  	  <option>${name}值2</option>
+									  	  <option>${name}值3</option>
+									</select>
+		                        </div>
+						</div>	
+#else
                     <div class="col-sm-12 col-info">
 						<div class="form-group m-n">
-                            <label class="control-label" data-translate="<%= translationKey %>"><%= fieldName %></label>
-							<input type="text" class="form-control" ng-model="<%= entityInstance %>.<%= fieldName %>" />
+                            <label class="control-label" >${name}</label>
+							<input type="text" class="form-control" ng-model="${formatEntityName}.${code}" />
                         </div>                
                     </div>
-					<%_ } _%>
-					<%_ } _%>
+   	 #end		
+#end
 		</div>
 		<div class="modal-footer">
-			<button type="button" ui-sref="app.<%= entityStateName%>" class="btn btn-danger">
-				<span class="glyphicon glyphicon-ban-circle"></span>&nbsp;<span data-translate="entity.action.cancel">Cancel</span>
-			</button>
-			<button type="submit"  required="required" ng-disabled="editForm.$invalid || isSaving" class="btn btn-primary">
+			<button type="submit" ng-verify class="btn btn-primary">
 				<span class="glyphicon glyphicon-save"></span>&nbsp;<span data-translate="entity.action.save">Save</span>
 			</button>
+##跳转方式
+#if(${hrefMethod}!="openWindow") 
+			<button type="button" ui-sref="app.${formatEntityName}" class="btn btn-danger">
+				<span class="glyphicon glyphicon-ban-circle"></span>&nbsp;<span data-translate="entity.action.cancel">Cancel</span>
+			</button>
+#else			
+			 <button type="button" ng-click="clear()" data-dismiss="modal" class="btn btn-danger">
+                <span class="glyphicon glyphicon-ban-circle"></span>&nbsp;<span data-translate="entity.action.cancel">Cancel</span>
+            </button>
+#end
+			
 		 </div>
 	</form>
 </div>

@@ -6,19 +6,18 @@ import java.util.Date;
 /*
  * A ${entityName} entity
  */
-
 @Entity
 @Table(name = "${tableName}")
 public class ${entityName} implements Serializable {
 	private static final long serialVersionUID = 1L;
 		
-#foreach ($entity in $javaEntity)
+#foreach ($entity in $javaEntityList)
 	//$entity.name
-	 @Column(name = "${entity.columnName}")
+	 @Column(name="${entity.dataBaseColunmName}")
 	private $entity.dataType $entity.code;
 #end
 
-#foreach ($entity in $javaEntity)
+#foreach ($entity in $javaEntityList)
 	public void set${entity.formatterCode}($entity.dataType $entity.code) {
 		this.$entity.code = $entity.code;
 	}

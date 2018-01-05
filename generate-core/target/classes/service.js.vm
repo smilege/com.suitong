@@ -1,63 +1,60 @@
-<%#
- Copyright 2013-2017 the original author or authors from the JHipster project.
 
- This file is part of the JHipster project, see https://jhipster.github.io/
- for more information.
 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
 
-      http://www.apache.org/licenses/LICENSE-2.0
 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
--%>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 (function() {
     'use strict';
-<%_ let hasDate = false;
-    if (fieldsContainInstant || fieldsContainZonedDateTime || fieldsContainLocalDate) {
-        hasDate = true;
-    }
-_%>
     angular
-        .module('<%=angularAppName%>')
-        .factory('<%= entityClass %>Service', <%= entityClass %>Service);
+        .module('devplatformApp')
+        .factory('${entityName}Service', ${entityName}Service);
 
-    <%= entityClass %>Service.$inject = ['globalConstant', 'utilService'];
+    ${entityName}Service.$inject = ['globalConstant', 'utilService'];
 
-    function <%= entityClass %>Service (globalConstant, utilService) {
-        function get<%= entityClass %>(params) {
-            return utilService.requestGet(globalConstant.devplatform_web_apiPath + 'api/<%= entityTranslationKey %>/get<%= entityClass %>/', params);
+    function ${entityName}Service (globalConstant, utilService) {
+        function get${entityName}(params) {
+            return utilService.requestGet(globalConstant.devplatform_web_apiPath + 'api/${formatEntityName}/get${entityName}/', params);
         }
-        function update<%= entityClass %>(params) {
-            return utilService.requestPut(globalConstant.devplatform_web_apiPath + 'api/<%= entityTranslationKey %>/update<%= entityClass %>', params);
+        function update${entityName}(params) {
+            return utilService.requestPut(globalConstant.devplatform_web_apiPath + 'api/${formatEntityName}/update${entityName}', params);
         }
-        function save<%= entityClass %>(params) {
-            return utilService.requestPost(globalConstant.devplatform_web_apiPath + 'api/<%= entityTranslationKey %>/create<%= entityClass %>', params);
+        function save${entityName}(params) {
+            return utilService.requestPost(globalConstant.devplatform_web_apiPath + 'api/${formatEntityName}/create${entityName}', params);
         }
-        function delete<%= entityClass %>(params) {
-            return utilService.requestDelete(globalConstant.devplatform_web_apiPath + 'api/<%= entityTranslationKey %>/delete<%= entityClass %>/', params);
+        function delete${entityName}(params) {
+            return utilService.requestDelete(globalConstant.devplatform_web_apiPath + 'api/${formatEntityName}/delete${entityName}/', params);
         }
-		function batchDelete<%= entityClass %>(params) {
-            return utilService.requestPost(globalConstant.devplatform_web_apiPath + 'api/<%= entityTranslationKey %>/batchDelete<%= entityClass %>', params);
+		function batchDelete${entityName}(params) {
+            return utilService.requestPost(globalConstant.devplatform_web_apiPath + 'api/${formatEntityName}/batchDelete${entityName}', params);
         }
-		function list<%= entityClass %>(params) {
-            return utilService.requestPost(globalConstant.devplatform_web_apiPath + 'api/<%= entityTranslationKey %>/list<%= entityClass %>', params);
+		function list${entityName}(params) {
+            return utilService.requestPost(globalConstant.devplatform_web_apiPath + 'api/${formatEntityName}/list${entityName}', params);
         }
         var service = {
-            "get<%= entityClass %>":get<%= entityClass %>,
-            "update<%= entityClass %>":update<%= entityClass %>,
-            "save<%= entityClass %>":save<%= entityClass %>,
-            "delete<%= entityClass %>":delete<%= entityClass %>,
-			"batchDelete<%= entityClass %>":batchDelete<%= entityClass %>,
-			"list<%= entityClass %>":list<%= entityClass %>
+            "get${entityName}":get${entityName},
+            "update${entityName}":update${entityName},
+            "save${entityName}":save${entityName},
+            "delete${entityName}":delete${entityName},
+			"batchDelete${entityName}":batchDelete${entityName},
+			"list${entityName}":list${entityName}
         };
         return service;
     }
 })();
-
-
