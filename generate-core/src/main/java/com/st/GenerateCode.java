@@ -14,6 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
+import org.apache.velocity.runtime.resource.Resource;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -21,6 +22,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.st.entity.DetailField;
 import com.st.entity.JavaEntity;
 import com.st.entity.ListField;
+import com.st.entity.ParentField;
 import com.st.entity.SaveField;
 import com.st.entity.SearchField;
 import com.st.entity.TableEntity;
@@ -119,13 +121,13 @@ public class GenerateCode {
 			SearchField searchField = new SearchField();
 			String search = json.getString("search");
 			if (StringUtils.isNotBlank(search) && "012".contains(search)) {
-				searchField.setCode(code);
-				searchField.setName(name);
-				searchField.setComponentType(componentType);
+				//colEntity(new Object(), code, name, componentType);
 				searchField.setDataBaseColunmName(columnName);				
+				searchField.setDataType(dataType);				
 				searchField.setQueryType(search);
 				searchList.add(searchField);
 			}
+			
 			//处理列表块，list约定 空或者其他为输出，N为不输出
 			ListField listField = new ListField();
 			String list = json.getString("list");
@@ -164,6 +166,7 @@ public class GenerateCode {
 			javaEntity.setName(name);
 			javaEntity.setDataType(dataType);
 			javaEntity.setDataBaseColunmName(columnName);
+			javaEntity.setDataType(dataType);
 			javaEntityList.add(javaEntity);
 		}
 		tableEntity.setListList(listList);
@@ -226,6 +229,13 @@ public class GenerateCode {
 	}
 	
 	
+	private static void colEntity(Object o,String code,String name,String componentType){
+		((ParentField) o).setCode(code);
+		((ParentField) o).setName(name);
+		((ParentField) o).setComponentType(componentType);
+		System.out.println(o);
+	}
+	
 	/**
 	 * @param saveField 
 	 * @param regexList 
@@ -249,66 +259,95 @@ public class GenerateCode {
 		return null;
 	}
 
+	//获取模板
 	public static List<String> getTemplates(List<String> partList, List<String> codesList, String isTranslate){
 		List<String> templates = new ArrayList<String>();
 		if(null!=codesList && codesList.size()>0){
 			for (String codes : codesList) {
-				templates = chooseTemplates(codes, partList,isTranslate);
+				templates = chooseTemplates(templates,codes, partList,isTranslate);
 			}
 		}else{
-			templates =	chooseTemplates(null, partList,isTranslate);
+			templates =	chooseTemplates(templates,null, partList,isTranslate);
 			}
 		return templates;
 		}
 	
     //选择前后端模板
-	public static List<String> chooseTemplates(String codes,List<String> partList, String isTranslate){
-		List<String> templates = new ArrayList<String>();
+	public static List<String> chooseTemplates(List<String> templates, String codes,List<String> partList, String isTranslate){
+		String[] needArr = {"manage","save","detail","delete","import","export"};  
 		if ("client".equalsIgnoreCase(codes) || codes==null){
 			//需要前端代码，并根据功能选择对应的前端模板
 			if(null!=partList && partList.size()>0){
-				for (String needPart : partList) {
-					if (needPart.contains("manage")) {
-							templates.add("template/list.html.vm");
-							templates.add("template/list.controller.js.vm");
-						}
-						if (needPart.contains("save")) {
-							templates.add("template/save.html.vm");
-							templates.add("template/save.controller.js.vm");
-						}
-						if (needPart.contains("detail")) {
-							templates.add("template/detail.html.vm");
-							templates.add("template/detail.controller.js.vm");
-						}
-					}
-				//加载国际化json文件
-				if ("Y".equalsIgnoreCase(isTranslate)) {
-					templates.add("template/cn.json.vm");
-					templates.add("template/en.json.vm");
-					}
-				templates.add("template/state.js.vm");
-				templates.add("template/service.js.vm");
+				getClientTemp(templates, partList, isTranslate);
 			}else{ //如果功能块没写，默认全部加载
-				String[] needArr = {"manage","save","detail","delete","import","export"};  
 				partList = java.util.Arrays.asList(needArr);
-				chooseTemplates(codes, partList,isTranslate);
+				templates = getAllTemplates(templates,codes, partList,isTranslate);
 			}
-			
 		}
 		if ("server".equalsIgnoreCase(codes) || codes==null){
 			//需要后端代码
 			if(null!=partList && partList.size()>0){
-				templates.add("template/Controller.java.vm");
-				templates.add("template/Service.java.vm");
-				templates.add("template/ServiceImpl.java.vm");
-				templates.add("template/Dao.java.vm");
-				templates.add("template/Entity.java.vm");
+				getServerTemp(templates);
 			}else{ //如果功能块没写，默认全部加载
-				String[] needArr = {"manage","save","detail","delete","import","export"};  
 				partList = java.util.Arrays.asList(needArr);
-				chooseTemplates(codes, partList,isTranslate);
+				templates = getAllTemplates(templates,codes, partList,isTranslate);
 			}
 		}
 		return templates;
+	}
+
+	/**不填写功能，默认加载所有的文件
+	 * @param templates 
+	 * @param codes
+	 * @param partList
+	 * @param isTranslate
+	 * @return 
+	 */
+	private static List<String> getAllTemplates(List<String> templates, String codes, List<String> partList,String isTranslate) {
+		if ("client".equalsIgnoreCase(codes) || codes==null){//需要前端代码
+			if(null!=partList && partList.size()>0){
+				getClientTemp(templates, partList, isTranslate);
+			}
+		}
+		if ("server".equalsIgnoreCase(codes) || codes==null){//需要后端代码
+			if(null!=partList && partList.size()>0){
+				getServerTemp(templates);
+			}
+		}
+		return templates;
+	}
+	
+	//获取前端模板文件,并根据功能选择对应的前端模板
+	public static void getClientTemp(List<String> templates,List<String> partList, String isTranslate) {
+		for (String needPart : partList) {
+			if (needPart.contains("manage")) {
+					templates.add("template/list.html.vm");
+					templates.add("template/list.controller.js.vm");
+				}
+				if (needPart.contains("save")) {
+					templates.add("template/save.html.vm");
+					templates.add("template/save.controller.js.vm");
+				}
+				if (needPart.contains("detail")) {
+					templates.add("template/detail.html.vm");
+					templates.add("template/detail.controller.js.vm");
+				}
+			}
+		//加载国际化json文件
+		if ("Y".equalsIgnoreCase(isTranslate)) {
+			templates.add("template/cn.json.vm");
+			templates.add("template/en.json.vm");
+			}
+		templates.add("template/state.js.vm");
+		templates.add("template/service.js.vm");
+	}
+	
+	//获取后端模板
+	public static void getServerTemp(List<String> templates){
+		templates.add("template/Controller.java.vm");
+		templates.add("template/Service.java.vm");
+		templates.add("template/ServiceImpl.java.vm");
+		templates.add("template/Dao.java.vm");
+		templates.add("template/Entity.java.vm");
 	}
 }

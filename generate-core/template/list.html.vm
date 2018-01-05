@@ -1,5 +1,25 @@
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <div class="panel ng-scope re-panel page-bottom" ng-controller="${className}Controller" >
     <form class="form-horizontal form-inline page-top">
         <div class="wrapper-md">

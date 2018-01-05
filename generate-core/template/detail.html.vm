@@ -1,5 +1,24 @@
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #if(${hrefMethod}!="openWindow")
 <div class="panel ng-scope save-panel" ng-controller="${entityName}DetailController">
 #else

@@ -8,6 +8,7 @@ public class JavaEntity extends ParentField {
 	private String dataType;
 	private String dataBaseColunmName; //如果名字是clounmName模板会解析不了，奇葩
 	private String formatterCode;
+	private String queryType;//0:精确,1：模糊,2：日期范围
 
 	
 	public String getDataType() {
@@ -29,4 +30,11 @@ public class JavaEntity extends ParentField {
 	public void setFormatterCode(String formatterCode) {
 		this.formatterCode = formatterCode;
 	}
+	public String getQueryType() {
+		return queryType;
+	}
+	public void setQueryType(String queryType) {
+		this.queryType = queryType;
+	}
+	
 }

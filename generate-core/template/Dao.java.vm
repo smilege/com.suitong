@@ -1,5 +1,39 @@
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 package ${package}.dao;
 
 import ${package}.entity.${className}Entity;

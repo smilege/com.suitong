@@ -7,6 +7,7 @@ package com.st.entity;
 public class SearchField extends ParentField{
 	private String queryType;//0:精确,1：模糊,2：日期范围
 	private String dataBaseColunmName; 
+	private String dataType; 
 	
 	
 	public String getQueryType() {
@@ -20,6 +21,12 @@ public class SearchField extends ParentField{
 	}
 	public void setDataBaseColunmName(String dataBaseColunmName) {
 		this.dataBaseColunmName = dataBaseColunmName;
+	}
+	public String getDataType() {
+		return dataType;
+	}
+	public void setDataType(String dataType) {
+		this.dataType = dataType;
 	}
 	
 	
